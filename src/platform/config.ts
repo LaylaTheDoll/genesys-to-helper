@@ -7,6 +7,7 @@ export const config = {
   signupChannelId: process.env.TOURNEY_SIGNUP_CHANNEL_ID ?? "",
   pairingChannelId: process.env.TOURNEY_FIND_OPPS_CHANNEL_ID ?? "",
   dropsChannelId: process.env.TOURNEY_DROPS_CHANNEL_ID ?? "",
+  signupRoleId: process.env.TOURNEY_SIGNUP_ROLE_ID ?? "",
   dashboardPort: Number(process.env.DASHBOARD_PORT ?? 6767),
   dashboardBind: process.env.DASHBOARD_BIND ?? "127.0.0.1",
   timeZone: process.env.TOURNEY_TIME_ZONE ?? "UTC",

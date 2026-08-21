@@ -6,6 +6,7 @@ import { logFailure } from "../logging/error-log";
 import type { Round, Tournament, TournamentStructure } from "../core/types";
 import { DROP_EMOJI, SIGNUP_EMOJI } from "../core/types";
 import { DiscordGateway, noMentions, type DiscordClient, type Sendable, type SentMessage } from "../discord/gateway";
+import { config } from "../platform/config";
 
 // Here commands come in and state changes happen.
 
@@ -267,6 +268,7 @@ export class TournamentService {
     const lastRound = tour.rounds[tour.rounds.length - 1];
     if (tour.phase === "running" && lastRound && !isRoundComplete(lastRound)) throw new Error(messages.errors.endPending);
     await this.discord.deleteMatchThreads(tour, "cleanup");
+    if (config.signupRoleId) await this.discord.removeRoleFromAll(tour, config.signupRoleId);
     tour.phase = "ended";
     tour.endedAt = new Date().toISOString();
     this.store.save();
