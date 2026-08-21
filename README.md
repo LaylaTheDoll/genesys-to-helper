@@ -3,6 +3,47 @@ Discord bot for Genesys Yu-Gi-Oh! tournaments, with a localhost dashboard.
 
 **Stack**: Bun + TypeScript + discord.js v14 + `Bun.serve` dashboard. Persistence: compact atomic JSON writes in `data/state.json` with a `.bak` backup. No database.
 
+### Quick start.
+
+1. Install Bun from <https://bun.sh/docs/installation#windows>.
+2. `cp .env.example .env` — fill:
+   - `DISCORD_TOKEN` — bot token
+   - `ADMIN_DISCORD_USER_ID` — the single tournament-admin user
+   - `GUILD_ID` — used for instant slash-command registration
+   - `DASHBOARD_PORT` / `DASHBOARD_BIND` — default `6767` / `127.0.0.1`; binding must stay loopback
+   - `TOURNEY_TIME_ZONE` — archive month grouping timezone, default `UTC`
+    - `TOURNEY_SIGNUP_CHANNEL_ID` — registration announcement and signup reactions
+   - `TOURNEY_FIND_OPPS_CHANNEL_ID` — round announcements and duel threads
+   - `TOURNEY_DROPS_CHANNEL_ID` — drop reaction message
+   - `TOURNEY_MSG_*` / `TOURNEY_ERR_*` — editable bot announcements and validation messages
+   - `TOURNEY_PLAYER_REPORTING_ENABLED` — default `false`; allow players to report results in Discord
+3. Run `bun install` to install dependencies.
+4. Lastly `bun run start` to initiate or `bun run dev` (watch)
+
+If the env vars are missing, the bot is skipped and the dashboard still runs in test mode.
+
+Message templates support placeholders such as `{name}`, `{label}`, `{lines}`, and `{player}`. Use `\n` for line breaks. Existing `.env` files should copy the message variables from `.env.example` when customizing text.
+
+## Discord setup
+
+- Invite the bot with the `bot` scope and these permissions: **Send Messages**, **Manage Threads**, **Create Public Threads / Private Threads** (private threads need Manage Threads), **Embed Links** (optional), **Read Messages / View Channels**, **Add/Remove Reactions**.
+- No privileged intents are required; the bot uses standard guild/reaction intents.
+- Slash commands are registered into the guild at startup.
+
+## Discord setup
+
+- Invite the bot with the `bot` scope and these permissions: **Send Messages**, **Manage Threads**, **Create Public Threads / Private Threads** (private threads need Manage Threads), **Embed Links** (optional), **Read Messages / View Channels**, **Add/Remove Reactions**.
+- No privileged intents are required; the bot uses standard guild/reaction intents.
+- Slash commands are registered into the guild at startup.
+
+##  Player's flow through discord
+
+1. When tournament created, signup announcement is sent to the signup channel.
+2. Players react ✅, then use `/decklist url`.
+3. When it starts, reports players missing decklists.
+4. When pairing, it creates threads and players receive a notification.
+5. Play in the private thread; the TO reports through Dashboard or `/tourney-report`, unless player reporting is enabled.
+
 ## Features
 
 - Tournament Management can be done entirely through the dashboard.
@@ -57,53 +98,7 @@ Points → Opponents Match-Win % → Opponents- Opponents OMW% → DDD (sum of s
 - Match-Win % floored at 33% for opponents (both directions: your OMW vs winless players, and your own MWP in others' OMW).
 - Final DDD semantics verified against the official v2.5 policy doc.
 
-## Setup
-
-1. `bun install`
-2. `cp .env.example .env` — fill:
-   - `DISCORD_TOKEN` — bot token
-   - `ADMIN_DISCORD_USER_ID` — the single tournament-admin user
-   - `GUILD_ID` — used for instant slash-command registration
-   - `DASHBOARD_PORT` / `DASHBOARD_BIND` — default `6767` / `127.0.0.1`; binding must stay loopback
-   - `TOURNEY_TIME_ZONE` — archive month grouping timezone, default `UTC`
-    - `TOURNEY_SIGNUP_CHANNEL_ID` — registration announcement and signup reactions
-   - `TOURNEY_FIND_OPPS_CHANNEL_ID` — round announcements and duel threads
-   - `TOURNEY_DROPS_CHANNEL_ID` — drop reaction message
-   - `TOURNEY_MSG_*` / `TOURNEY_ERR_*` — editable bot announcements and validation messages
-   - `TOURNEY_PLAYER_REPORTING_ENABLED` — default `false`; allow players to report results in Discord
-3. `bun run dev` (watch) or `bun run start`
-
-If the env vars are missing, the bot is skipped and the dashboard still runs in test mode.
-
-Message templates support placeholders such as `{name}`, `{label}`, `{lines}`, and `{player}`. Use `\n` for line breaks. Existing `.env` files should copy the message variables from `.env.example` when customizing text.
-
-### Windows quick start (Optional)
-
-1. Install Bun from <https://bun.sh/docs/installation#windows>.
-2. Double-click `start-bot.bat`.
-3. On first run, edit the generated `.env` file.
-4. Double-click `start-bot.bat` again.
-
-The launcher installs dependencies when `node_modules` is missing, opens the dashboard in your browser, and keeps the console open if startup fails.
-
-## Discord setup
-
-- Invite the bot with the `bot` scope and these permissions: **Send Messages**, **Manage Threads**, **Create Public Threads / Private Threads** (private threads need Manage Threads), **Embed Links** (optional), **Read Messages / View Channels**, **Add/Remove Reactions**, **Administrator** is easiest for a POC.
-- No privileged intents are required; the bot uses standard guild/reaction intents.
-- Slash commands are registered into the guild at startup.
-
-## Flow through discord
-
-1. `/tourney-create name structure` → signup announcement in the signup channel.
-2. Players react ✅, then use `/decklist url`.
-3. `/tourney-start` → reports players missing decklists.
-4. `/tourney-pair` → threads created, announced.
-5. Play in the private thread; the TO reports `/tourney-report 2 0` (or `2 1`), unless player reporting is enabled.
-6. Admin `/tourney-report double_loss: true` when time expires.
-7. For Swiss + Top Cut, the TO clicks `Start Top Cut` or runs `/tourney-top-cut`.
-8. Repeat `/tourney-pair` … `/tourney-end`, or use the separated dashboard cancel action to discard.
-
-## Commands
+## Discord Commands
 
 ```
 /tourney-create name structure [top_cut]  # start signups
