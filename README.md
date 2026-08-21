@@ -5,6 +5,8 @@ Discord bot for Genesys Yu-Gi-Oh! tournaments, with a localhost dashboard.
 
 ## Features
 
+- Tournament Management can be done entirely through the dashboard.
+
 - `/tourney-create` — starts signups.
 - Decklist collection via `/decklist url`, first URL is stored, further links are rejected.
 - `/tourney-start` — closes signup and reports missing decklists.
