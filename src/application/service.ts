@@ -250,7 +250,10 @@ export class TournamentService {
     if (!player) throw new Error(messages.errors.notParticipant);
     if (player.dropped) throw new Error(messages.errors.alreadyDropped);
     const lastRound = tour.rounds[tour.rounds.length - 1];
-    if (lastRound && !isRoundComplete(lastRound)) throw new Error(messages.errors.waitForRound);
+    if (lastRound && !isRoundComplete(lastRound)) {
+      const myMatch = lastRound.matches.find((m) => m.pairing.kind === "duel" && (m.pairing.playerA === userId || m.pairing.playerB === userId),);
+      if (myMatch && myMatch.report === null) throw new Error(messages.errors.waitForRound);
+    }
     const bracketStarted = lastRound && (
       tour.structure === "singleElimination" ||
       tour.structure === "doubleElimination" ||
