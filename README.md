@@ -1,5 +1,4 @@
-# yugi-tourney-bot
-
+# Genesis TO Helper
 Discord bot for Genesys Yu-Gi-Oh! tournaments, with a localhost dashboard.
 
 **Stack**: Bun + TypeScript + discord.js v14 + `Bun.serve` dashboard. Persistence: compact atomic JSON writes in `data/state.json` with a `.bak` backup. No database.
@@ -120,7 +119,7 @@ The launcher installs dependencies when `node_modules` is missing, opens the das
 
 ```
 bash
-bun test       # pairing, service, messages, gateway + state migration (33 tests)
+bun test       # pairing, service, messages, gateway + state migration
 bun run typecheck
 ```
 
