@@ -27,7 +27,7 @@ Message templates support placeholders such as `{name}`, `{label}`, `{lines}`, a
 
 ## Discord setup
 
-- Invite the bot with the `bot` scope and these permissions: 
+### Invite the bot with the `bot` scope and these permissions: 
 - **Send Messages**;
 - **Manage Threads**;
 - **Create Public Threads / Private Threads** (private threads need Manage Threads);
