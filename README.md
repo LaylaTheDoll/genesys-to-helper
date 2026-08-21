@@ -3,7 +3,7 @@ Discord bot for Genesys Yu-Gi-Oh! tournaments, with a localhost dashboard.
 
 **Stack**: Bun + TypeScript + discord.js v14 + `Bun.serve` dashboard. Persistence: compact atomic JSON writes in `data/state.json` with a `.bak` backup. No database.
 
-### Quick start.
+## Quick Start
 
 1. Install Bun from <https://bun.sh/docs/installation#windows>.
 2. `cp .env.example .env` — fill:
