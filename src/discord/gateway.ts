@@ -86,4 +86,17 @@ export class DiscordGateway {
     });
     if (message) await message.delete().catch((error) => logFailure(context, error));
   }
+
+  async removeRoleFromAll(tournament: Tournament, roleId: string): Promise<void> {
+    if (!this.client || !roleId) return;
+    const guild = tournament.guildId ? await this.client.guilds.fetch(tournament.guildId).catch((error) => {
+      logFailure("fetch guild for role removal", error);
+      return null;
+    }) : null;
+    if (!guild) return;
+    await Promise.all(Object.keys(tournament.players).map(async (userId) => {
+      const member = await guild.members.fetch(userId).catch((error) =>
+        logFailure(`remove role from ${userId}`, error));
+    }));
+  }
 }

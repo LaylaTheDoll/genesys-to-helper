@@ -95,6 +95,11 @@ export function startBot(store: Store, service: TournamentService): void {
           signedUpAt: new Date().toISOString(),
         };
         store.save();
+        if (config.signupRoleId) {
+          const guild = reaction.message.guild ?? (tour.guildId ? await client.guilds.fetch(tour.guildId).catch(() => null) : null);
+          const member = guild ? await guild.members.fetch(user.id).catch(() => null) : null;
+          if (member) await member.roles.add(config.signupRoleId).catch((error) => logFailure("add signup role", error));
+        }
         return;
       }
       if (["collecting", "running"].includes(tour.phase) && reaction.emoji.name === DROP_EMOJI && reaction.message.id === tour.dropMessageId) {
