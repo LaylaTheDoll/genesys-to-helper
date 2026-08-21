@@ -99,4 +99,15 @@ export class DiscordGateway {
         logFailure(`remove role from ${userId}`, error));
     }));
   }
+
+  async removeRole(guildId: string, userId: string, roleId: string): Promise<void> {
+    if (!this.client || !roleId) return;
+    const guild = await this.client.guilds.fetch(guildId).catch((error) => {
+      logFailure(`fetch guild for role removal`, error);
+      return null;
+    });
+    if (!guild) return;
+    const member = await guild.members.fetch(userId).catch(() => null);
+    if (member) await member.roles.remove(roleId).catch((error) => logFailure(`remove role from ${userId}`, error));
+  }
 }

@@ -259,6 +259,7 @@ export class TournamentService {
     if (bracketStarted) throw new Error(messages.errors.dropsLocked);
     player.dropped = true;
     this.store.save();
+    if (config.signupRoleId) await this.discord.removeRole(tour.guildId, userId, config.signupRoleId);
     return formatMessage(messages.dropped, { player: player.username });
   }
 
@@ -284,6 +285,7 @@ export class TournamentService {
       this.discord.deleteMessage(tour.signupChannelId, tour.signupMessageId, "delete signup message during cancellation"),
       this.discord.deleteMessage(tour.dropsChannelId, tour.dropMessageId, "delete drop message during cancellation"),
     ]);
+    if (config.signupRoleId) await this.discord.removeRoleFromAll(tour, config.signupRoleId);
     this.store.data.tournament = null;
     this.store.save();
     return messages.cancelConfirmed;
