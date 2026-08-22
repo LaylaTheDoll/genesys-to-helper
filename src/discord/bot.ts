@@ -20,6 +20,12 @@ import { noMentions } from "./gateway";
 
 const URL_RE = /^https?:\/\/[^\s<>]+$/i;
 
+function isValidDecklistUrl(link: string): boolean {
+  if(!URL_RE.test(link)) return false;
+  const prefix = config.decklistUrlPrefix;
+  return prefix === "" || link.startsWith(prefix);
+}
+
 // Discord is only the front door. The service owns tournament rules.
 
 function isAdmin(user: User): boolean {
@@ -164,7 +170,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction, service: 
 
     case "decklist": {
       const link = interaction.options.getString("url", true).trim();
-      if (link.length > 2048 || !URL_RE.test(link)) throw new Error(messages.errors.invalidDecklistUrl);
+      if (link.length > 2048 || !isValidDecklistUrl(link)) throw new Error(messages.errors.invalidDecklistUrl);
       await interaction.reply({ content: await service.submitDecklist(interaction.user.id, link), ephemeral: true, ...noMentions });
       return;
     }
