@@ -74,6 +74,7 @@ export function startBot(store: Store, service: TournamentService): void {
         console.log(`[bot] registered ${commands.length} commands in guild ${config.guildId}`);
       }
     }
+    await service.reconcileSignups().catch((e) => logFailure("reconcile signups", e));
   });
 
   client.on(Events.MessageReactionAdd, async (reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) => {
