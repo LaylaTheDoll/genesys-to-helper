@@ -66,6 +66,7 @@ export class TournamentService {
   drop(userId: string): Promise<string> { return this.mutate(() => this.dropInternal(userId)); }
   end(): Promise<string> { return this.mutate(() => this.endInternal()); }
   cancel(): Promise<string> { return this.mutate(() => this.cancelInternal()); }
+  reconcileSignups(): Promise<void> { return this.mutate(() => this.reconcileSignupsInternal()); }
 
   private async announce(content: string): Promise<boolean> {
     const tournament = this.store.data.tournament;
@@ -293,6 +294,31 @@ export class TournamentService {
     this.store.save();
     return messages.cancelConfirmed;
   }
+
+  private async reconcileSignupsInternal(): Promise<void> {
+    const tour = this.store.data.tournament;
+    if (!tour || tour.phase !== "signup" || !tour.signupMessageId) return;
+    const users = await this.discord.fetchReactionUsers(tour.signupChannelId, tour.signupMessageId, SIGNUP_EMOJI);
+    let added = 0;
+    for (const user of users) {
+      if (tour.players[user.id]) continue;
+      tour.players[user.id] = {
+        userId: user.id,
+        username: user.username,
+        decklist: null,
+        archetype: null,
+        dropped: false,
+        byeCount: 0,
+        signedUpAt: new Date().toISOString(),
+      };
+      if (config.signupRoleId) await this.discord.addRole(tour.guildId, user.id, config.signupRoleId);
+      added++;
+    }
+      if (added > 0) {
+        this.store.save();
+        console.log(`[bot] recovered ${added} signups missed while offline`);
+      }
+    }
 
   standingsText(tour: Tournament = this.requireTournament()): string {
     const rows = computeStandings(tour);

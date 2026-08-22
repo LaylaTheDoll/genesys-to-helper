@@ -110,4 +110,37 @@ export class DiscordGateway {
     const member = await guild.members.fetch(userId).catch(() => null);
     if (member) await member.roles.remove(roleId).catch((error) => logFailure(`remove role from ${userId}`, error));
   }
+
+  async addRole(guildId: string, userId: string, roleId: string): Promise<void> {
+    if (!this.client || !roleId) return;
+    const guild = await this.client.guilds.fetch(guildId).catch((error) => {
+      logFailure(`fetch guild for role addition`, error);
+      return null;
+    });
+    if (!guild) return;
+    const member = await guild.members.fetch(userId).catch(() => null);
+    if (member) await member.roles.add(roleId).catch((error) => logFailure(`add role to ${userId}`, error));
+  }
+
+  async fetchReactionUsers(channelId: string, messageId: string, emoji: string): Promise<{ id: string; username: string }[]> {
+    if (!this.client) return [];
+    const channel = await this.client.channels.fetch(channelId).catch((error) => {
+      logFailure(`fetch channel for reaction recovery`, error);
+      return null;
+    });
+    if (!(channel instanceof TextChannel)) return [];
+    const message = await channel.messages.fetch(messageId).catch((error) => {
+      logFailure(`fetch message for reaction recovery`, error);
+      return null;
+    });
+    if (!message) return [];
+    const reaction = message.reactions.cache.find((r) => r.emoji.name === emoji);
+    if (!reaction) return [];
+    const users = await reaction.users.fetch().catch((error) => {
+      logFailure(`fetch reaction users`, error); 
+      return null;
+    });
+    if (!users) return [];
+    return [...users.values()].filter((u) => !u.bot).map((u) => ({ id: u.id, username: u.username ?? "unknown" })); 
+  }
 }
